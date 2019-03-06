@@ -20,6 +20,7 @@
 * `containerId`: `int`
 ### `ContainershipType`
 * `id`: `int`
+* `name`: `string`
 * `length`: `int`
 * `heigth`: `int`
 * `width`: `int`
