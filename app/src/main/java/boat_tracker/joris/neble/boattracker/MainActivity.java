@@ -1,5 +1,6 @@
 package boat_tracker.joris.neble.boattracker;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -20,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final ArrayList<Containership> listContainers = new ArrayList<>();
-        Containership bato1 = new Containership(0, "Titanic", "Michel");
+        Containership bato1 = new Containership(0, "Titanic", "Michel",);
         Containership bato2 = new Containership(1, "Bato", "roiBateau");
         listContainers.add(bato1);
         listContainers.add(bato2);
@@ -31,8 +32,9 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), "Le nom du bato est : " + listContainers
-                        .get(position).getName() + " et le chef est : " + listContainers.get(position).getCaptainName(), Toast.LENGTH_SHORT).show();
+                Intent intent =new Intent(MainActivity.this, OptionsBoatActivity.class);
+                intent.putExtra("boat" , listContainers.get(position));
+                startActivity(intent);
             }
         });
     }

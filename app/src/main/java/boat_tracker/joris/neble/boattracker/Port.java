@@ -1,6 +1,8 @@
 package boat_tracker.joris.neble.boattracker;
 
-public class Port {
+import java.io.Serializable;
+
+public class Port implements Serializable {
     private int id;
     private String name;
     private float latitude;

@@ -1,6 +1,8 @@
 package boat_tracker.joris.neble.boattracker;
 
-public class ContainershipType {
+import java.io.Serializable;
+
+public class ContainershipType implements Serializable {
     private int id;
     private String name;
     private int lenght;

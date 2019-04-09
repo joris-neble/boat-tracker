@@ -1,6 +1,8 @@
 package boat_tracker.joris.neble.boattracker;
 
-public class Containership {
+import java.io.Serializable;
+
+public class Containership implements Serializable {
     private int id;
     private String name;
     private String captainName;
@@ -10,10 +12,11 @@ public class Containership {
     private ContainershipType type;
     private Container containers;
 
-    public Containership(int id, String name, String captainName) {
+    public Containership(int id, String name, String captainName, ContainershipType type) {
         this.id = id;
         this.name = name;
         this.captainName = captainName;
+        this.type = type;
     }
 
     public Containership() {}
