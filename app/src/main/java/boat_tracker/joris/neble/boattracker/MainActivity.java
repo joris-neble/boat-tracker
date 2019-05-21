@@ -21,8 +21,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final ArrayList<Containership> listContainers = new ArrayList<>();
-        Containership bato1 = new Containership(0, "Titanic", "Michel",);
-        Containership bato2 = new Containership(1, "Bato", "roiBateau");
+        ContainershipType cargo = new ContainershipType(0, "Cargo", 10, 20, 21);
+        ContainershipType barge = new ContainershipType(1, "barge", 5, 2, 3);
+        Port marseille = new Port(0,"Marseille", (float) 5.364227, (float)43.294628);
+        Port somalie = new Port(1, "Somalie", (float)11.844445, (float) 51.301045);
+        Containership bato1 = new Containership(0, "Titanic", "Michel",(float) -84.411830, (float)33.791677, cargo, marseille);
+        Containership bato2 = new Containership(1, "Bato", "roiBateau",(float) 6.204019, (float)44.076219, barge, somalie);
         listContainers.add(bato1);
         listContainers.add(bato2);
         final AdapterContainership adapter = new AdapterContainership(listContainers,this);
@@ -32,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent =new Intent(MainActivity.this, OptionsBoatActivity.class);
+                Intent intent =new Intent(MainActivity.this, MapsActivity.class);
                 intent.putExtra("boat" , listContainers.get(position));
                 startActivity(intent);
             }

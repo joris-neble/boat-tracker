@@ -27,6 +27,12 @@
             android:id="@+id/boatN"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
         <TextView
             android:id="@+id/boatType"
             android:layout_width="wrap_content"
@@ -42,6 +48,14 @@
             android:layout_width="match_parent"
             android:layout_height="100dp"
             android:text="Calculer la distance" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/distCalcul"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
 

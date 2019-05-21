@@ -12,11 +12,14 @@ public class Containership implements Serializable {
     private ContainershipType type;
     private Container containers;
 
-    public Containership(int id, String name, String captainName, ContainershipType type) {
+    public Containership(int id, String name, String captainName, float latitude, float longitude,ContainershipType type, Port port) {
         this.id = id;
         this.name = name;
         this.captainName = captainName;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.type = type;
+        this.port = port;
     }
 
     public Containership() {}
