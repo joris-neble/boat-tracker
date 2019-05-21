@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -46,6 +48,16 @@ public class OptionsBoatActivity extends AppCompatActivity {
                 distanceCalcule.setText("La distance est de : " + distance);
             }
         });
+        Button goToMap = (Button) findViewById(R.id.goMap);
+        goToMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent =new Intent(v.getContext(), MapsActivity.class);
+                intent.putExtra("boat" , boatClicked);
+                startActivity(intent);
+            }
+        });
+
     }
 
 

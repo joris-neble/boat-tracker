@@ -12,6 +12,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -20,8 +22,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         final ArrayList<Containership> listContainers = new ArrayList<>();
         ContainershipType cargo = new ContainershipType(0, "Cargo", 10, 20, 21);
+        db.collection("Container").document("Cargo").set(cargo);
         ContainershipType barge = new ContainershipType(1, "barge", 5, 2, 3);
         Port marseille = new Port(0,"Marseille", (float) 5.364227, (float)43.294628);
         Port somalie = new Port(1, "Somalie", (float)11.844445, (float) 51.301045);
@@ -36,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent =new Intent(MainActivity.this, MapsActivity.class);
+                Intent intent =new Intent(MainActivity.this, OptionsBoatActivity.class);
                 intent.putExtra("boat" , listContainers.get(position));
                 startActivity(intent);
             }
