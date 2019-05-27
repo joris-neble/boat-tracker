@@ -25,11 +25,11 @@ public class MainActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         final ArrayList<Containership> listContainers = new ArrayList<>();
         ContainershipType cargo = new ContainershipType(0, "Cargo", 10, 20, 21);
-        db.collection("Container").document("Cargo").set(cargo);
         ContainershipType barge = new ContainershipType(1, "barge", 5, 2, 3);
         Port marseille = new Port(0,"Marseille", (float) 5.364227, (float)43.294628);
         Port somalie = new Port(1, "Somalie", (float)11.844445, (float) 51.301045);
         Containership bato1 = new Containership(0, "Titanic", "Michel",(float) -84.411830, (float)33.791677, cargo, marseille);
+        db.collection("Container").document("Cargo").set(bato1);
         Containership bato2 = new Containership(1, "Bato", "roiBateau",(float) 6.204019, (float)44.076219, barge, somalie);
         listContainers.add(bato1);
         listContainers.add(bato2);
