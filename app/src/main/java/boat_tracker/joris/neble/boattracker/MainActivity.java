@@ -14,6 +14,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -32,8 +38,11 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     public String TAG = "BoatList";
+    private GoogleSignInClient mGoogleSignInClient;
+    private static final int RC_SIGN_IN = 231;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -42,65 +51,107 @@ public class MainActivity extends AppCompatActivity {
         final ArrayList<Containership> listContainers = new ArrayList<>();
         ContainershipType cargo = new ContainershipType(0, "Cargo", 10, 20, 21);
         ContainershipType barge = new ContainershipType(1, "barge", 5, 2, 3);
-        Port marseille = new Port(0,"Marseille", (float) 5.364227, (float)43.294628);
-        Port somalie = new Port(1, "Somalie", (float)11.844445, (float) 51.301045);
-        Containership bato1 = new Containership(0, "Titanic", "Michel",(float) -84.411830, (float)33.791677, cargo, marseille);
-        Containership bato2 = new Containership(1, "Bato", "roiBateau",(float) 6.204019, (float)44.076219, barge, somalie);
-        //writeInAllBases(bato1);
-        //writeInAllBases(bato2);
-        updateObjectInDb(bato1, "Containership", bato1.getName());
-        getObjectInDb();
+        Port marseille = new Port(0, "Marseille", (float) 5.364227, (float) 43.294628);
+        Port somalie = new Port(1, "Somalie", (float) 11.844445, (float) 51.301045);
+        Containership bato1 = new Containership(0, "Titanic", "Michel", (float) -84.411830, (float) 33.791677, cargo, marseille);
+        Containership bato2 = new Containership(1, "Bato", "roiBateau", (float) 6.204019, (float) 44.076219, barge, somalie);
 
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        SignInButton signInButton = findViewById(R.id.sign_in_button);
 
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()) {
+                    case R.id.sign_in_button:
+                        signIn();
+                        break;
+                }
+            }
+        });
 
 
         listContainers.add(bato1);
         listContainers.add(bato2);
-        final AdapterContainership adapter = new AdapterContainership(listContainers,this);
+        final AdapterContainership adapter = new AdapterContainership(listContainers, this);
 
         final ListView listView = (ListView) findViewById(R.id.listOfBoat);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent =new Intent(MainActivity.this, OptionsBoatActivity.class);
-                intent.putExtra("boat" , listContainers.get(position));
+                Intent intent = new Intent(MainActivity.this, OptionsBoatActivity.class);
+                intent.putExtra("boat", listContainers.get(position));
                 startActivity(intent);
             }
         });
     }
-    public void sendObjectInDb(Object o, String collectionPath){
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    public void sendObjectInDb(Object o, String collectionPath, String document) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(collectionPath).add(o)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
-                });
+        db.collection(collectionPath).document(document).set(o);
 
     }
-    public void getObjectInDb() {
+
+    public boolean getObjectNameInDb(final String doc) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final boolean exists = false;
         db.collection("Containership").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (DocumentSnapshot documentSnapshot : task.getResult().getDocuments()) {
-                        documentSnapshot.getId()
+                        if (doc.equals(documentSnapshot.getId())) {
+                            setExists(exists);
+                            return;
+                        }
                     }
+                }
+            }
+        });
+        return exists;
+    }
+
+    public void getObjectInDb() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        ArrayList<String> boats = new ArrayList<>();
+        db.collection("Containership").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+
                 }
             }
         });
     }
 
-    public void updateObjectInDb(Containership boat, String collectionPath, String documentPath){
+    private void setExists(boolean exists) {
+        exists = !exists;
+    }
+
+    public void checkBoatExists(Containership boat) {
+        if (getObjectNameInDb(boat.getName()))
+            writeInAllBases(boat);
+        else
+            updateObjectInDb(boat, "Containership", boat.getName());
+    }
+
+    public void updateObjectInDb(Containership boat, String collectionPath, String documentPath) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference ref = db.collection(collectionPath).document(documentPath);
         Map<String, Object> data = new HashMap<>();
@@ -128,15 +179,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void writeInAllBases(Containership boat){
-        sendObjectInDb(boat, "Containership");
-        //sendObjectInDb(boat.getContainers(),"Container");
-        sendObjectInDb(boat.getPort(), "Port");
-        sendObjectInDb(boat.getType(), "ContainershipType");
+    public void writeInAllBases(Containership boat) {
+        sendObjectInDb(boat, "Containership", boat.getName());
+        //sendObjectInDb(boat.getContainers(),"Container", boat.getName());
+        sendObjectInDb(boat.getPort(), "Port", boat.getName());
+        sendObjectInDb(boat.getType(), "ContainershipType", boat.getName());
     }
 
-    public void updateInAllBases(Containership boat){
-        //updateObjectInDb();
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            updateUI(account);
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            updateUI(null);
+        }
+    }
+
+    private void updateUI(GoogleSignInAccount account){
+        TextView msg = (TextView) findViewById(R.id.Bienvenue);
+        msg.setText("dkkedkd");
     }
 }
-
