@@ -14,12 +14,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,6 +41,7 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
     public String TAG = "BoatList";
     private GoogleSignInClient mGoogleSignInClient;
+    private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 231;
 
     @Override
@@ -59,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         SignInButton signInButton = findViewById(R.id.sign_in_button);
-
+        Button signOutButton = findViewById(R.id.sign_out_button);
+        signOutButton.setVisibility(View.INVISIBLE);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,6 +75,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                    case R.id.sign_out_button:
+                        signOut();
+                        break;
+                }
+
+            }
+        });
 
         listContainers.add(bato1);
         listContainers.add(bato2);
@@ -92,11 +108,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
@@ -125,19 +137,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         return exists;
-    }
-
-    public void getObjectInDb() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        ArrayList<String> boats = new ArrayList<>();
-        db.collection("Containership").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-
-                }
-            }
-        });
     }
 
     private void setExists(boolean exists) {
@@ -191,22 +190,41 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    private void signOut() {
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Toast.makeText(getApplicationContext(), "Déconnexion", Toast.LENGTH_LONG).show();
+                updateUI(null);
+            }
+        });
+    }
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
-            // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
             updateUI(null);
         }
     }
 
-    private void updateUI(GoogleSignInAccount account){
-        TextView msg = (TextView) findViewById(R.id.Bienvenue);
-        msg.setText("dkkedkd");
+    private void updateUI(GoogleSignInAccount account) {
+        if (account != null) {
+            SignInButton button = findViewById(R.id.sign_in_button);
+            button.setVisibility(View.INVISIBLE);
+            TextView textAccueil = findViewById(R.id.Bienvenue);
+            textAccueil.setText("Bonjour " + account.getGivenName());
+            Button signOutButton = findViewById(R.id.sign_out_button);
+            signOutButton.setVisibility(View.VISIBLE);
+        }
+        else{
+            SignInButton button = findViewById(R.id.sign_in_button);
+            button.setVisibility(View.VISIBLE);
+            TextView textAccueil = findViewById(R.id.Bienvenue);
+            textAccueil.setText("");
+            Button signOutButton = findViewById(R.id.sign_out_button);
+            signOutButton.setVisibility(View.INVISIBLE);
+        }
     }
 }
