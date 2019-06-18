@@ -61,6 +61,15 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
         <Button
+            android:id="@+id/modifBoat"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:text="Modifier le bateau"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <Button
             android:id="@+id/goMap"
             android:layout_width="match_parent"
             android:layout_height="100dp"

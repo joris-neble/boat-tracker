@@ -40,6 +40,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".OptionsBoatActivity" />
+        <activity android:name=".modificationBoat"></activity>
     </application>
 
 </manifest>

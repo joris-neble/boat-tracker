@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void sendObjectInDb(Object o, String collectionPath, String document) {
+    public static void sendObjectInDb(Object o, String collectionPath, String document) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(collectionPath).document(document).set(o);
 

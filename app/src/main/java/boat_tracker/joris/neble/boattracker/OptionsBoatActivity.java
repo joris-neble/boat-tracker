@@ -57,6 +57,15 @@ public class OptionsBoatActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        Button modificationBoat = (Button) findViewById(R.id.modifBoat);
+        modificationBoat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), boat_tracker.joris.neble.boattracker.modificationBoat.class);
+                intent.putExtra("boat", boatClicked);
+                startActivity(intent);
+            }
+        });
 
 
     }
