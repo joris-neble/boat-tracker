@@ -6,15 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -26,23 +23,25 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static boat_tracker.joris.neble.boattracker.Functions.createBoat;
+import static boat_tracker.joris.neble.boattracker.Functions.sendObjectInDb;
+
 public class MainActivity extends AppCompatActivity {
     public String TAG = "BoatList";
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 231;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,14 +49,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         final ArrayList<Containership> listContainers = new ArrayList<>();
-        ContainershipType cargo = new ContainershipType(0, "Cargo", 10, 20, 21);
-        ContainershipType barge = new ContainershipType(1, "barge", 5, 2, 3);
-        Port marseille = new Port(0, "Marseille", (float) 5.364227, (float) 43.294628);
-        Port somalie = new Port(1, "Somalie", (float) 11.844445, (float) 51.301045);
-        Containership bato1 = new Containership(0, "Titanic", "Michel", (float) -84.411830, (float) 33.791677, cargo, marseille);
-        Containership bato2 = new Containership(1, "Bato", "roiBateau", (float) 6.204019, (float) 44.076219, barge, somalie);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -87,9 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-        listContainers.add(bato1);
-        listContainers.add(bato2);
         final AdapterContainership adapter = new AdapterContainership(listContainers, this);
 
         final ListView listView = (ListView) findViewById(R.id.listOfBoat);
@@ -102,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        createBoat(db ,listContainers, listView, adapter);
+
     }
 
 
@@ -114,11 +105,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void sendObjectInDb(Object o, String collectionPath, String document) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(collectionPath).document(document).set(o);
 
-    }
 
     public boolean getObjectNameInDb(final String doc) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -161,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
         data.put("name", boat.getName());
         data.put("port", boat.getPort());
         data.put("type", boat.getType());
-
         ref.update(data).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

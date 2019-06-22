@@ -1,5 +1,6 @@
 package boat_tracker.joris.neble.boattracker;
 
+import android.graphics.Bitmap;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
@@ -7,6 +8,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -28,7 +31,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         final Containership boatClicked =(Containership) getIntent().getSerializableExtra("boat");
         LatLng currentBoat = new LatLng(boatClicked.getLongitude(), boatClicked.getLatitude());
-        mMap.addMarker(new MarkerOptions().position(currentBoat).title("Marker in Bato"));
+        mMap.addMarker(new MarkerOptions().position(currentBoat).title("Le bateau  est" + boatClicked.getName()));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(currentBoat));
     }
 }

@@ -26,8 +26,11 @@ public class modificationBoat extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ++id;
-                Containership currentBoat = new Containership(id,inputName.getText().toString(), inputCaptainName.getText().toString(), boatClicked.getLatitude(),boatClicked.getLongitude(), boatClicked.getType(), boatClicked.getPort());
-                MainActivity.sendObjectInDb(currentBoat,"Containership", boatClicked.getName());
+                boatClicked.setCaptainName(inputCaptainName.getText().toString());
+                boatClicked.setName(inputName.getText().toString());
+                boatClicked.setLatitude(Float.valueOf(inputLatitude.getText().toString()));
+                boatClicked.setLongitude(Float.valueOf(inputLongitude.getText().toString()));
+                boatClicked.pushToFirestore();
             }
         });
 

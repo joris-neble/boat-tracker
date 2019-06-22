@@ -14,6 +14,8 @@ import java.util.ArrayList;
 public class AdapterContainership extends BaseAdapter {
     ArrayList<Containership> containershipArrayList;
     Context context;
+    private TextView nameBoat;
+    private TextView nameCap;
 
     public AdapterContainership(ArrayList<Containership> containershipArrayList, Context context) {
         this.containershipArrayList = containershipArrayList;
@@ -38,10 +40,15 @@ public class AdapterContainership extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         convertView = LayoutInflater.from(context).inflate(R.layout.activity_listview,parent,false);
-        TextView nameBoat = convertView.findViewById(R.id.boatName);
-        TextView nameCap = convertView.findViewById(R.id.boatCaptain);
+        nameBoat = convertView.findViewById(R.id.boatName);
+        nameCap = convertView.findViewById(R.id.boatCaptain);
         nameBoat.setText(" Bato nom : "+containershipArrayList.get(position).getName());
         nameCap.setText(" \n Le capitaine est " + containershipArrayList.get(position).getCaptainName());
         return convertView;
+    }
+
+    public void update(){
+        nameBoat.setText(" Bato nom : "+containershipArrayList.get(0).getName());
+        nameCap.setText(" \n Le capitaine est " + containershipArrayList.get(0).getCaptainName());
     }
 }

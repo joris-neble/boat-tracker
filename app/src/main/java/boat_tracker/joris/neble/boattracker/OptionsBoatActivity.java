@@ -34,16 +34,7 @@ public class OptionsBoatActivity extends AppCompatActivity {
         calculDistance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Location pointA = new Location("ptA");
-                Location pointB = new Location("ptB");
-
-                pointA.setLongitude(boatClicked.getLongitude());
-                pointA.setLatitude(boatClicked.getLatitude());
-
-                pointB.setLongitude(boatClicked.getPort().getLongitude());
-                pointB.setLatitude(boatClicked.getPort().getLatitude());
-
-                float distance = (pointA.distanceTo(pointB))/1000;
+                float distance = Functions.calculDistanceBetweenTwoPoints(boatClicked);
                 TextView distanceCalcule = (TextView) findViewById(R.id.distCalcul);
                 distanceCalcule.setText("La distance est de : " + distance);
             }

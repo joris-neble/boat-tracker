@@ -1,28 +1,43 @@
 package boat_tracker.joris.neble.boattracker;
 
+import android.print.PrintDocumentInfo;
+
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Containership implements Serializable {
+    public static ArrayList<Containership> allContainerShip = new ArrayList<>();
     private int id;
     private String name;
     private String captainName;
     private float latitude;
     private float longitude;
-    private Port port;
-    private ContainershipType type;
+    private Port Port;
+    private ContainershipType ContainershipType;
     private Container containers;
 
-    public Containership(int id, String name, String captainName, float latitude, float longitude,ContainershipType type, Port port) {
-        this.id = id;
+
+    public Containership(String name, String captainName, float latitude, float longitude){
         this.name = name;
         this.captainName = captainName;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.type = type;
-        this.port = port;
+        allContainerShip.add(this);
+        this.id = allContainerShip.size();
     }
-
-    public Containership() {}
+    public Containership(int id,String name, String captainName, float latitude, float longitude){
+        this.name = name;
+        this.captainName = captainName;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        allContainerShip.add(this);
+        this.id = id;
+    }
 
     public int getId() {
         return id;
@@ -65,19 +80,19 @@ public class Containership implements Serializable {
     }
 
     public Port getPort() {
-        return port;
+        return Port;
     }
 
     public void setPort(Port port) {
-        this.port = port;
+        this.Port = port;
     }
 
     public ContainershipType getType() {
-        return type;
+        return ContainershipType;
     }
 
     public void setType(ContainershipType type) {
-        this.type = type;
+        this.ContainershipType = type;
     }
 
     public Container getContainers() {
@@ -91,6 +106,22 @@ public class Containership implements Serializable {
     @Override
     public String toString() {
         return  "Le Bateau n°"+ id + " s'appelle " + name + " est le capitaine est " + captainName;
+    }
 
+    public void pushToFirestore(){
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Map boat = new HashMap();
+        boat.put("name", this.name);
+        boat.put("CaptainName", this.captainName);
+        boat.put("latitude", this.latitude);
+        boat.put("longitude", this.longitude);
+        boat.put("id", this.id);
+        boat.put("Port", "/Port/"+this.Port.getName());
+        boat.put("ContainershipType", "/ContainershipType/" + this.ContainershipType.getName());
+        FirebaseFirestore.getInstance().document("Containership/" + this.id).set(boat);
     }
 }
